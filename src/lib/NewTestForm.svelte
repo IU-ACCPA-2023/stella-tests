@@ -58,20 +58,10 @@
 </script>
 
 <form
-	class="flex flex-col items-center justify-evenly h-full"
+	class="flex flex-col items-center justify-evenly h-4/6"
 	on:submit|preventDefault={uploadTests}
 >
 	<FileDropzone name="file" bind:files accept=".stella" multiple required />
-
-	<label class="label">
-		<span>Description (optional)</span>
-		<textarea
-			class="textarea"
-			rows="2"
-			bind:value={description}
-			placeholder="Enter some additional description to help identify the test"
-		/>
-	</label>
 	{#if files}
 		<ol class="list text-token card p-4 space-y-1">
 			{#each files as file, i}
@@ -82,6 +72,16 @@
 			{/each}
 		</ol>
 	{/if}
+
+	<label class="label">
+		<span>Description (optional)</span>
+		<textarea
+			class="textarea"
+			rows="2"
+			bind:value={description}
+			placeholder="Enter some additional description to help identify the test"
+		/>
+	</label>
 
 	<div class="space-y-2">
 		<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
