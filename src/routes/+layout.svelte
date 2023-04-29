@@ -6,6 +6,20 @@
 	// Most of your app wide CSS should be put in this file
 	import '../app.postcss';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import { supabase } from '$lib/supabase';
+	import { user, trackAuthStatus } from '$lib/user';
+	import { onMount } from 'svelte';
+
+	async function signIn() {
+		const { data, error } = await supabase.auth.signInWithOAuth({
+			provider: 'github',
+		});
+		if (error) {
+			alert('Error ' + error.name + ': ' + error.message);
+		}
+	}
+
+	onMount(trackAuthStatus);
 </script>
 
 <!-- App Shell -->
@@ -17,6 +31,11 @@
 				<strong class="text-xl uppercase">Stella Tests</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				{#if $user == null}
+					<button class="btn" on:click={signIn}>Sign in</button>
+				{:else}
+					<p>@{$user.user_metadata.user_name}</p>
+				{/if}
 				<a
 					class="btn btn-sm variant-ghost-surface"
 					href="https://github.com/IU-ACCPA-2023/stella-tests"
