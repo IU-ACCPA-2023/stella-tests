@@ -18,6 +18,7 @@ export interface Database {
           id: number
           name: string
           tags: string[]
+          well_typed: boolean
         }
         Insert: {
           created_at?: string
@@ -27,6 +28,7 @@ export interface Database {
           id?: number
           name: string
           tags?: string[]
+          well_typed: boolean
         }
         Update: {
           created_at?: string
@@ -36,6 +38,7 @@ export interface Database {
           id?: number
           name?: string
           tags?: string[]
+          well_typed?: boolean
         }
       }
     }

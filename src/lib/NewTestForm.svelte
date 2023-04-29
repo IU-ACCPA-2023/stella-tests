@@ -22,18 +22,20 @@
 	}
 
 	async function uploadTest(file: File) {
-		const fileName = tags.join(',') + '-' + file.name;
+		const typing = wellTyped ? 'well' : 'ill';
+		const fileName = typing + '-' + tags.join(',') + '-' + file.name;
 		const bucket = supabase.storage.from('tests');
 		const { data, error: uploadError } = await bucket.upload(fileName, file, {
 			upsert: false,
 		});
 		if (uploadError) {
 			alert('Error ' + uploadError.name + ': ' + uploadError.message);
-			return;
+			throw uploadError;
 		}
 		const { error: insertError } = await supabase.from('tests').insert({
 			file_path: fileName,
 			name: file.name,
+			well_typed: wellTyped,
 			description,
 			tags,
 		});
