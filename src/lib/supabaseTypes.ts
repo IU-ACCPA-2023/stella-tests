@@ -14,7 +14,7 @@ export interface Database {
           created_at: string
           created_by: string | null
           description: string
-          file: string
+          file_path: string
           id: number
           name: string
           tags: string[]
@@ -23,7 +23,7 @@ export interface Database {
           created_at?: string
           created_by?: string | null
           description?: string
-          file: string
+          file_path: string
           id?: number
           name: string
           tags?: string[]
@@ -32,7 +32,7 @@ export interface Database {
           created_at?: string
           created_by?: string | null
           description?: string
-          file?: string
+          file_path?: string
           id?: number
           name?: string
           tags?: string[]
