@@ -1,0 +1,104 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { supabase } from './supabase';
+	import type { Database } from './supabaseTypes';
+	import DownloadIcon from '~icons/fe/download';
+	import TrashIcon from '~icons/fe/trash';
+
+	type Test = Database['public']['Tables']['tests']['Row'];
+
+	let tests: Test[] = [];
+
+	onMount(async () => {
+		const { data, error } = await supabase.from('tests').select('*');
+		if (error) {
+			alert('An error occured fetching data: ' + error.message);
+			return;
+		}
+		tests = data;
+		const channel = supabase
+			.channel('tests-changes')
+			.on(
+				'postgres_changes',
+				{
+					event: 'INSERT',
+					schema: 'public',
+					table: 'tests',
+				},
+				(payload) => {
+					tests = [...tests, payload.new as Test];
+				}
+			)
+			.subscribe();
+		return channel.unsubscribe;
+	});
+
+	async function downloadTest(test: Test) {
+		const { data } = supabase.storage.from('tests').getPublicUrl(test.file_path);
+		const { publicUrl } = data;
+		const a = document.createElement('a');
+		a.href = publicUrl;
+		a.style.display = 'none';
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+	}
+
+	async function deleteTest(test: Test) {
+		if (!confirm('Are you sure you want to delete this test?')) {
+			return;
+		}
+		const { error: fileError } = await supabase.storage.from('tests').remove([test.file_path]);
+		if (fileError) {
+			alert('Error deleting file: ' + fileError.message);
+			return;
+		}
+		const { error: dbError } = await supabase.from('tests').delete().eq('id', test.id);
+		if (dbError) {
+			alert('Error removing row from DB: ' + dbError.message);
+			return;
+		}
+		tests = tests.filter((t) => t.id != test.id);
+	}
+</script>
+
+<div class="table-container">
+	<table class="table table-hover table-compact">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Tags</th>
+				<th>Description</th>
+				<th>Added at</th>
+				<th><!-- Actions --></th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each tests as test}
+				<tr>
+					<td>{test.name}</td>
+					<td class="flex flex-wrap gap-1">
+						{#if test.well_typed}
+							<span class="chip variant-filled-success">Well-typed</span>
+						{:else}
+							<span class="chip variant-filled-error">Ill-typed</span>
+						{/if}
+						{#each test.tags as tag}
+							<span class="chip variant-filled">{tag}</span>
+						{/each}
+					</td>
+					<td>{test.description}</td>
+					<td>{new Date(test.created_at).toLocaleString()}</td>
+					<td>
+						<button class="btn btn-icon h-5" on:click={() => downloadTest(test)}>
+							<DownloadIcon class="mr-2" />
+						</button>
+						<button class="btn btn-icon h-5" on:click={() => deleteTest(test)}>
+							<TrashIcon color="red" />
+						</button>
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
