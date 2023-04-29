@@ -12,7 +12,7 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@iconify-json/fa": "^1.1.4",
+		"@iconify-json/fe": "^1.1.6",
 		"@skeletonlabs/skeleton": "^1.2.5",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",

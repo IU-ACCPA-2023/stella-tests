@@ -2,9 +2,9 @@
 	import { RadioGroup, RadioItem, FileDropzone } from '@skeletonlabs/skeleton';
 	import { features, type Feature } from './languageFeatures';
 	import { supabase } from '$lib/supabase';
-	import CheckIcon from '~icons/fa/check';
-	import ThumbsUp from '~icons/fa/thumbs-up';
-	import ThumbsDown from '~icons/fa/thumbs-down';
+	import CheckIcon from '~icons/fe/check';
+	import CheckVerifiedIcon from '~icons/fe/check-verified';
+	import BugIcon from '~icons/fe/bug';
 
 	let choices = Object.fromEntries(features.map((feat) => [feat, false])) as Record<
 		Feature,
@@ -58,7 +58,7 @@
 </script>
 
 <form
-	class="flex flex-col items-center justify-evenly h-4/6"
+	class="flex flex-col items-center justify-evenly h-4/6 mb-5"
 	on:submit|preventDefault={uploadTests}
 >
 	<FileDropzone name="file" bind:files accept=".stella" multiple required />
@@ -73,27 +73,28 @@
 		</ol>
 	{/if}
 
-	<label class="label">
-		<span>Description (optional)</span>
-		<textarea
-			class="textarea"
-			rows="2"
-			bind:value={description}
-			placeholder="Enter some additional description to help identify the test"
-		/>
-	</label>
-
-	<div class="space-y-2">
-		<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
-			<RadioItem bind:group={wellTyped} name="typing" value={true}>
-				<ThumbsUp color="blue" class="inline mr-1" />
-				Well-typed
-			</RadioItem>
-			<RadioItem bind:group={wellTyped} name="typing" value={false}>
-				<ThumbsDown color="red" class="inline mr-1" />
-				Ill-typed
-			</RadioItem>
-		</RadioGroup>
+	<div class="w-full flex items-center justify-evenly">
+		<label class="label">
+			<span>Description (optional)</span>
+			<textarea
+				class="textarea"
+				rows="2"
+				bind:value={description}
+				placeholder="Enter some additional description to help identify the test"
+			/>
+		</label>
+		<div class="space-y-2">
+			<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
+				<RadioItem bind:group={wellTyped} name="typing" value={true}>
+					<CheckVerifiedIcon color="green" class="inline mr-1" />
+					Well-typed
+				</RadioItem>
+				<RadioItem bind:group={wellTyped} name="typing" value={false}>
+					<BugIcon color="red" class="inline mr-1" />
+					Ill-typed
+				</RadioItem>
+			</RadioGroup>
+		</div>
 	</div>
 
 	<div class="flex flex-wrap justify-center gap-2">
