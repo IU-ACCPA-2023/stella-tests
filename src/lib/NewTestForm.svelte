@@ -60,9 +60,10 @@
 </script>
 
 <form
-	class="flex flex-col items-center justify-evenly h-4/6 mb-5"
+	class="flex flex-col items-center justify-evenly h-[70vh] mb-5"
 	on:submit|preventDefault={uploadTests}
 >
+	<h1>Upload a new test</h1>
 	<FileDropzone name="file" bind:files accept=".stella" multiple required />
 	{#if files}
 		<ol class="list text-token card p-4 space-y-1">
