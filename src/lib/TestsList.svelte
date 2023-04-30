@@ -4,10 +4,19 @@
 	import type { Database } from './supabaseTypes';
 	import DownloadIcon from '~icons/fe/download';
 	import TrashIcon from '~icons/fe/trash';
+	import type { Feature } from './languageFeatures';
+	import FeaturesFilter from './FeaturesFilter.svelte';
 
 	type Test = Database['public']['Tables']['tests']['Row'];
 
 	let tests: Test[] = [];
+	let wellTypedFilter: boolean | null = null;
+	let includedTags: Feature[] = [];
+	$: filteredTests = tests.filter(
+		(test) =>
+			(wellTypedFilter == null || wellTypedFilter === test.well_typed) &&
+			includedTags.every((tag) => test.tags.includes(tag))
+	);
 
 	onMount(async () => {
 		const { data, error } = await supabase.from('tests').select('*');
@@ -62,7 +71,9 @@
 	}
 </script>
 
-<div class="table-container">
+<div class="table-container mb-20">
+	<h1>Filters</h1>
+	<FeaturesFilter bind:wellTypedFilter bind:includedTags />
 	<table class="table table-hover table-compact">
 		<thead>
 			<tr>
@@ -74,7 +85,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each tests as test}
+			{#each filteredTests as test}
 				<tr>
 					<td>{test.name}</td>
 					<td class="flex flex-wrap gap-1">
