@@ -19,6 +19,10 @@
 	export let includedTags: Feature[] = [];
 	let input = '';
 
+	const dispatch = createEventDispatcher<{
+		download: { wellTypedFilter: boolean | null; includedTags: Feature[] };
+	}>();
+
 	const inputOptions = features.map((f) => ({
 		label: f,
 		value: f,
@@ -37,6 +41,13 @@
 			includedTags = [...includedTags, event.detail.value];
 			input = '';
 		}
+	}
+
+	function triggerDownload() {
+		dispatch('download', {
+			includedTags,
+			wellTypedFilter,
+		});
 	}
 </script>
 
@@ -75,7 +86,7 @@
 		/>
 	</div>
 
-	<button class="btn variant-filled-primary">
+	<button class="btn variant-filled-primary" on:click={triggerDownload}>
 		<span><DownloadIcon /></span>
 		<span>Download All</span>
 	</button>

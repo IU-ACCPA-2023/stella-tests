@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import JSZip from 'jszip';
 	import { supabase } from './supabase';
 	import type { Database } from './supabaseTypes';
 	import DownloadIcon from '~icons/fe/download';
 	import TrashIcon from '~icons/fe/trash';
 	import type { Feature } from './languageFeatures';
 	import FeaturesFilter from './FeaturesFilter.svelte';
+	import { notNull, saveAs } from './utils';
 
 	type Test = Database['public']['Tables']['tests']['Row'];
 
@@ -69,11 +71,35 @@
 		}
 		tests = tests.filter((t) => t.id != test.id);
 	}
+
+	async function downloadAll() {
+		const results = await Promise.all(
+			filteredTests.map(async (test) => ({
+				name: test.file_path,
+				content: await supabase.storage.from('tests').download(test.file_path),
+			}))
+		);
+		const errors = results.map((res) => res.content.error).filter(notNull);
+		if (errors.length > 0) {
+			errors.forEach(console.error);
+			alert('An error occured. Please check the console');
+			return;
+		}
+		const zip = new JSZip();
+		results.forEach(({ name, content: { data } }) => {
+			zip.file(name, data!);
+		});
+		const content = await zip.generateAsync({ type: 'blob' });
+		const typingPrefix = wellTypedFilter == null ? '' : wellTypedFilter === true ? 'well-' : 'ill-';
+		const tags = includedTags.length === 0 ? '' : includedTags.join(',') + '-';
+		const fileName = typingPrefix + tags + 'tests.zip';
+		saveAs(fileName, content as Blob);
+	}
 </script>
 
 <div class="table-container mb-20">
 	<h1>Filters</h1>
-	<FeaturesFilter bind:wellTypedFilter bind:includedTags />
+	<FeaturesFilter bind:wellTypedFilter bind:includedTags on:download={downloadAll} />
 	<table class="table table-hover table-compact">
 		<thead>
 			<tr>
