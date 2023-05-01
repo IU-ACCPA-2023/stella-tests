@@ -8,6 +8,7 @@
 	import type { Feature } from './languageFeatures';
 	import FeaturesFilter from './FeaturesFilter.svelte';
 	import { notNull, saveAs } from './utils';
+	import { user } from './user';
 
 	type Test = Database['public']['Tables']['tests']['Row'];
 
@@ -130,9 +131,11 @@
 						<button class="btn btn-icon h-5" on:click={() => downloadTest(test)}>
 							<DownloadIcon class="mr-2" />
 						</button>
-						<button class="btn btn-icon h-5" on:click={() => deleteTest(test)}>
-							<TrashIcon color="red" />
-						</button>
+						{#if $user?.id == test.created_by}
+							<button class="btn btn-icon h-5" on:click={() => deleteTest(test)}>
+								<TrashIcon color="red" />
+							</button>
+						{/if}
 					</td>
 				</tr>
 			{/each}
