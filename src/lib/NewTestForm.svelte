@@ -60,7 +60,7 @@
 </script>
 
 <form
-	class="flex flex-col items-center justify-evenly h-[70vh] mb-5"
+	class="flex flex-col items-center justify-evenly h-[70vh]"
 	on:submit|preventDefault={uploadTests}
 >
 	<h1>Upload a new test</h1>

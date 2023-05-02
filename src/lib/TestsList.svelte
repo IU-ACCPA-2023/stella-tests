@@ -102,7 +102,7 @@
 	}
 </script>
 
-<div class="table-container mb-20">
+<div class="table-container mb-20 mt-5">
 	<h1>Filters</h1>
 	<FeaturesFilter bind:wellTypedFilter bind:includedTags on:download={downloadAll} />
 	<table class="table table-hover table-compact">
