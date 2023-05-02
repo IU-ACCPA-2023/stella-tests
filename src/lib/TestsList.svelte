@@ -5,6 +5,7 @@
 	import type { Database } from './supabaseTypes';
 	import DownloadIcon from '~icons/fe/download';
 	import TrashIcon from '~icons/fe/trash';
+	import ExternalLinkIcon from '~icons/fe/link-external';
 	import type { Feature } from './languageFeatures';
 	import FeaturesFilter from './FeaturesFilter.svelte';
 	import { notNull, saveAs } from './utils';
@@ -45,11 +46,14 @@
 		return channel.unsubscribe;
 	});
 
-	async function downloadTest(test: Test) {
+	function getUrl(test: Test) {
 		const { data } = supabase.storage.from('tests').getPublicUrl(test.file_path);
-		const { publicUrl } = data;
+		return data.publicUrl;
+	}
+
+	function downloadTest(test: Test) {
 		const a = document.createElement('a');
-		a.href = publicUrl;
+		a.href = getUrl(test);
 		a.style.display = 'none';
 		document.body.appendChild(a);
 		a.click();
@@ -128,6 +132,14 @@
 					<td>{test.description}</td>
 					<td>{new Date(test.created_at).toLocaleString()}</td>
 					<td>
+						<a
+							class="btn btn-icon h-5"
+							title="Open in the playground"
+							target="_blank"
+							href={`https://fizruk.github.io/stella/interpreter/?snippet_url=${getUrl(test)}`}
+						>
+							<ExternalLinkIcon class="mr-2" />
+						</a>
 						<button class="btn btn-icon h-5" on:click={() => downloadTest(test)}>
 							<DownloadIcon class="mr-2" />
 						</button>
